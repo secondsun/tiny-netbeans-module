@@ -4,7 +4,9 @@ import java.nio.CharBuffer;
 import net.saga.lang.tiny.parser.Parser;
 import net.saga.lang.tiny.scanner.Scanner;
 import net.saga.lang.tiny.scanner.Token;
+import net.saga.lang.tiny.scanner.TokenType;
 import static net.saga.lang.tiny.scanner.TokenType.COMMENT;
+import static net.saga.lang.tiny.scanner.TokenType.IDENTIFIER;
 
 import org.netbeans.spi.lexer.Lexer;
 import org.netbeans.spi.lexer.LexerInput;
@@ -15,24 +17,24 @@ class TinyLexer implements Lexer<TinyTokenId> {
     private final LexerRestartInfo<TinyTokenId> info;
     private Scanner scanner;
     private Parser javaParserTokenManager;
-    
+
     private CharBuffer buffer;
     private boolean mNeedInit = true;
 
     TinyLexer(LexerRestartInfo<TinyTokenId> info) {
         this.info = info;
-        
-        
+
     }
 
     @Override
     public org.netbeans.api.lexer.Token<TinyTokenId> nextToken() {
+
         LexerInput input = info.input();
-        
+
         if (mNeedInit) {
             setup();
         }
-        
+
         if (buffer.remaining() < 1) {
             if (input.read() == LexerInput.EOF) {
                 if (input.readLength() > 0) {
@@ -40,7 +42,7 @@ class TinyLexer implements Lexer<TinyTokenId> {
                 } else {
                     return null;
                 }
-                
+
             } else {
                 input.backup(1);
                 //do something, say something
@@ -48,34 +50,44 @@ class TinyLexer implements Lexer<TinyTokenId> {
             }
         }
         int startPosition = buffer.position();
-        Token token = scanner.nextToken(buffer);
+        Token token;
+        try {
+            token = scanner.nextToken(buffer);
+        } catch (Exception ignore) {
+            if (input.readLength() > 0) {
+                token = Token.newInstance(IDENTIFIER, 0);
+            } else {
+                token = Token.newInstance(COMMENT, 0);
+            }
+        }
         int endPosition = buffer.position();
         for (; startPosition < endPosition; startPosition++) {
             input.read();
         }
-        
+
         if (token == null) {
             if (buffer.remaining() < 1) {
-            if (input.read() == LexerInput.EOF) {
-                if (input.readLength() > 0) {
-                    return info.tokenFactory().createToken(TinyLanguageHierarchy.getToken(COMMENT.ordinal()));
+                if (input.read() == LexerInput.EOF) {
+                    if (input.readLength() > 0) {
+                        return info.tokenFactory().createToken(TinyLanguageHierarchy.getToken(COMMENT.ordinal()));
+                    } else {
+                        return null;
+                    }
+
                 } else {
+                    input.backup(1);
+                    //do something, say something
                     return null;
                 }
-                
-            } else {
-                input.backup(1);
-                //do something, say something
-                return null;
             }
         }
-        } 
-        
+
         if (info.tokenFactory() == null) {
             return null;
         }
-        
+
         return info.tokenFactory().createToken(TinyLanguageHierarchy.getToken(token.getType().ordinal()));
+
     }
 
     @Override
@@ -90,10 +102,10 @@ class TinyLexer implements Lexer<TinyTokenId> {
     private void setup() {
         LexerInput input = info.input();
         int character = 0;
-        
+
         StringBuilder builder = new StringBuilder(input.readLengthEOF());
         while ((character = input.read()) != LexerInput.EOF) {
-            builder.append((char)character);
+            builder.append((char) character);
         }
         scanner = new Scanner();
         Parser parser = new Parser();
@@ -102,5 +114,4 @@ class TinyLexer implements Lexer<TinyTokenId> {
         mNeedInit = false;
     }
 
-    
 }
