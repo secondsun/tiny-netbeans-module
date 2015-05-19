@@ -2,9 +2,10 @@ package net.saga.tiny.netbeans;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import static java.nio.CharBuffer.wrap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -18,15 +19,17 @@ import net.saga.lang.tiny.parser.Parser;
 import net.saga.lang.tiny.scanner.Scanner;
 import net.saga.lang.tiny.scanner.Token;
 import org.apache.commons.io.IOUtils;
-import org.netbeans.spi.project.ActionProgress;
+import org.netbeans.api.debugger.DebuggerManager;
+import org.netbeans.api.debugger.jpda.DebuggerStartException;
+import org.netbeans.api.debugger.jpda.JPDADebugger;
+import org.netbeans.api.java.classpath.ClassPath;
+import org.netbeans.spi.java.classpath.support.ClassPathSupport;
 import org.netbeans.spi.project.ActionProvider;
 import org.netbeans.spi.project.ProjectServiceProvider;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
-import org.openide.windows.IOProvider;
-import org.openide.windows.InputOutput;
 
 @ProjectServiceProvider(
         service
@@ -58,7 +61,6 @@ public class TinyActionsProvider implements ActionProvider {
             switch (command) {
                 case COMMAND_COMPILE_SINGLE: {
 
-                    
                     SwingUtilities.invokeLater(new Runnable() {
 
                         @Override
@@ -73,14 +75,30 @@ public class TinyActionsProvider implements ActionProvider {
                             pane.setVisible(false);
                         }
                     });
-                    
 
                 }
                 break;
                 case COMMAND_DEBUG_SINGLE:
+
+                    try {
+                        compile(_file);
+                        final Map properties = new HashMap();
+                        properties.put("baseDir", new File("/")); // NOI18N
+                        properties.put("sourcepath", ClassPathSupport.createClassPath(_file.getParent())); //NOI18N
+                        properties.put("name", "anonymous"); //NOI18N
+
+                        Runtime.getRuntime().exec("xterm -hold -e java -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=y -cp /tmp anonymous");
+                        Thread.sleep(2000);
+                        JPDADebugger.attach("localhost", 9009, new Object[]{properties});
+                        
+
+                    } catch (IOException | InterruptedException | DebuggerStartException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+
                     break;
                 case COMMAND_RUN_SINGLE: {
-                    
+
                     SwingUtilities.invokeLater(new Runnable() {
 
                         @Override
@@ -97,7 +115,6 @@ public class TinyActionsProvider implements ActionProvider {
                             }
                         }
                     });
-                    
 
                 }
                 break;
