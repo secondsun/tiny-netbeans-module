@@ -1,0 +1,8 @@
+This project includes source from the netbeans.org project.  
+The classes which are most similar include their original headers with a 
+notice that I edited them added.
+
+Class list : 
+net.saga.tiny.netbeans.debugger.Context
+net.saga.tiny.netbeans.debugger.TinyBreakpointActionsProvider
+net.saga.tiny.netbeans.debugger.TinyBreakpointAnnotationListener

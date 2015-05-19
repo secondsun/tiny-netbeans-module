@@ -55,6 +55,9 @@ import org.netbeans.spi.viewmodel.UnknownTypeException;
 /**
  * @author Martin Grebac
  * @author Martin Adamek
+ * 
+ * Tiny modifications
+ * @author Summers Pittman
  */
 public class TinyBreakpointActionsProvider  implements NodeActionsProviderFilter {
 
