@@ -29,14 +29,14 @@ public class TinyToggleBreakpointActionProvider extends ActionsProviderSupport i
     
     public TinyToggleBreakpointActionProvider () {
         Context.addPropertyChangeListener (this);
-        setEnabled (ActionsManager.ACTION_TOGGLE_BREAKPOINT, true);
+        setEnabled (ActionsManager.ACTION_TOGGLE_BREAKPOINT, false);
     }
     
     public TinyToggleBreakpointActionProvider (ContextProvider contextProvider) {
         debugger = (JPDADebugger) contextProvider.lookupFirst(null, JPDADebugger.class);
         debugger.addPropertyChangeListener (JPDADebugger.PROP_STATE, this);
         Context.addPropertyChangeListener (this);
-        setEnabled (ActionsManager.ACTION_TOGGLE_BREAKPOINT, true);
+        setEnabled (ActionsManager.ACTION_TOGGLE_BREAKPOINT, false);
     }
     
     

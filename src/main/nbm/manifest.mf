@@ -3,3 +3,5 @@ OpenIDE-Module: net.saga.tiny.netbeans
 OpenIDE-Module-Layer: net/saga/tiny/netbeans/layer.xml
 OpenIDE-Module-Localizing-Bundle: net/saga/tiny/netbeans/Bundle.properties
 OpenIDE-Module-Specification-Version: 1.0
+
+OpenIDE-Module-Module-Dependencies: org.netbeans.modules.cnd.toolchain
