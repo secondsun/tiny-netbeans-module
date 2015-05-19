@@ -14,7 +14,7 @@ class TinyLineBreakpointFactory {
     static Breakpoint create(String url, int lineNumber) throws MalformedURLException {
         LineBreakpoint tinyBreakpoint = LineBreakpoint.create(url, lineNumber);
         FileObject file = URLMapper.findFileObject(new URL(url));
-        tinyBreakpoint.setStratum("Java");
+        tinyBreakpoint.setStratum("Tiny");
         tinyBreakpoint.setSourceName(file.getNameExt());
         tinyBreakpoint.setSourcePath(getGroovyPath(url));
         tinyBreakpoint.setPreferredClassName("anonymous");

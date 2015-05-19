@@ -120,7 +120,7 @@ public class TinyActionsProvider implements ActionProvider {
 
         CompilerContext compilerContext = TinyCompiler.compileProgram(parseTree, new CompilerContext(), table);
 
-        compilerContext.jiteClass.setSourceFile(file.getAbsolutePath());
+        compilerContext.jiteClass.setSourceFile(file.getName());
 
         Class<?> compiledClass = new DynamicClassLoader().define(compilerContext.jiteClass);
         return compiledClass;
